@@ -1,18 +1,138 @@
-<main>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>QA & Test Automation News</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+    }
+    header {
+      background: #0a2540;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    header p {
+      margin: 5px 0 0 0;
+      font-size: 1rem;
+      color: #cfd8e1;
+    }
+    main {
+      padding: 20px;
+    }
+    section {
+      margin-bottom: 30px;
+    }
+    section h2 {
+      color: #0a2540;
+      margin-bottom: 10px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: white;
+      margin-bottom: 10px;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    a {
+      text-decoration: none;
+      color: #0a2540;
+      font-weight: bold;
+    }
+    footer {
+      text-align: center;
+      padding: 10px;
+      color: gray;
+      background: #e8ebf0;
+    }
+  </style>
+</head>
+<body>
 
-  <section>
-    <h2>🧪 Tests logiciels</h2>
-    <ul id="test-news"></ul>
-  </section>
+  <header>
+    <h1>QA & Test Automation News</h1>
+    <p>Veille technologique – Tests, QA, Automation, Playwright, Selenium, CI/CD</p>
+  </header>
 
-  <section>
-    <h2>🛡 QA / Qualité</h2>
-    <ul id="qa-news"></ul>
-  </section>
+  <main>
+    <section>
+      <h2>🧪 Tests logiciels</h2>
+      <ul id="test-news"></ul>
+    </section>
 
-  <section>
-    <h2>🤖 Test Automation</h2>
-    <ul id="automation-news"></ul>
-  </section>
+    <section>
+      <h2>🛡 QA / Qualité</h2>
+      <ul id="qa-news"></ul>
+    </section>
 
-</main>
+    <section>
+      <h2>🤖 Test Automation</h2>
+      <ul id="automation-news"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>By QA Automation Engineer – Portfolio</p>
+  </footer>
+
+  <script>
+    const sources = {
+      test: [
+        { name: "Software Testing Magazine", url: "https://www.softwaretestingmagazine.com/feed/" }
+      ],
+      qa: [
+        { name: "QA.Tech", url: "https://qa.tech/feed/" }
+      ],
+      automation: [
+        { name: "TestFort", url: "https://testfort.com/blog/feed/" }
+      ]
+    };
+
+    const keywords = {
+      test: ["test", "tests", "plan de test", "cas de test"],
+      qa: ["qa", "qualité", "quality", "assurance qualité"],
+      automation: ["automation", "automatisation", "playwright", "selenium", "cypress", "postman", "ci/cd"]
+    };
+
+    function loadNews(sectionId, feeds, keywords) {
+      const container = document.getElementById(sectionId);
+
+      feeds.forEach(feed => {
+        fetch(`https://api.rss2json.com/v1/api.json?rss_url=${feed.url}`)
+          .then(res => res.json())
+          .then(data => {
+            data.items.forEach(item => {
+              const content = (item.title + " " + item.description).toLowerCase();
+              const match = keywords.some(k => content.includes(k));
+              if (match) {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                  <strong>${feed.name}</strong><br>
+                  <a href="${item.link}" target="_blank">${item.title}</a>
+                `;
+                container.appendChild(li);
+              }
+            });
+          })
+          .catch(err => console.error("RSS error:", feed.name, err));
+      });
+    }
+
+    loadNews("test-news", sources.test, keywords.test);
+    loadNews("qa-news", sources.qa, keywords.qa);
+    loadNews("automation-news", sources.automation, keywords.automation);
+  </script>
+
+</body>
+</html>
